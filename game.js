@@ -209,7 +209,11 @@ function create() {
         three: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
         four: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
         e: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-        space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+        space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+        w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+        a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        s: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        d: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
     };
     
     // Collisions
@@ -233,17 +237,17 @@ function create() {
 function update(time, delta) {
     if (!player) return;
     
-    // Smooth player movement with acceleration
+    // Smooth player movement with acceleration (Arrow Keys OR WASD)
     const acceleration = 15;
     const maxSpeed = 250;
     const friction = 0.85;
     
-    if (cursors.left.isDown) {
+    if (cursors.left.isDown || keys.a.isDown) {
         player.setVelocityX(Math.max(player.body.velocity.x - acceleration, -maxSpeed));
         player.flipX = true;
         player.alpha = Math.min(1, player.alpha + 0.01);
         createMovementTrail(this, player);
-    } else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown || keys.d.isDown) {
         player.setVelocityX(Math.min(player.body.velocity.x + acceleration, maxSpeed));
         player.flipX = false;
         player.alpha = Math.min(1, player.alpha + 0.01);
@@ -253,8 +257,8 @@ function update(time, delta) {
         player.setVelocityX(player.body.velocity.x * friction);
     }
     
-    // Jump with enhanced effect
-    if ((cursors.up.isDown || keys.space.isDown) && player.body.touching.down) {
+    // Jump with enhanced effect (Arrow Up OR W OR Space)
+    if ((cursors.up.isDown || keys.w.isDown || keys.space.isDown) && player.body.touching.down) {
         player.setVelocityY(-450);
         createJumpEffect(this, player);
     }
