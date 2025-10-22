@@ -8,7 +8,7 @@ const gameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 800 },
+            gravity: { y: 700 },
             debug: false
         }
     },
@@ -259,7 +259,7 @@ function update(time, delta) {
     
     // Jump with enhanced effect (Arrow Up OR W OR Space)
     if ((cursors.up.isDown || keys.w.isDown || keys.space.isDown) && player.body.touching.down) {
-        player.setVelocityY(-450);
+        player.setVelocityY(-550);
         createJumpEffect(this, player);
     }
     
