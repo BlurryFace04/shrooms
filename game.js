@@ -358,8 +358,8 @@ function applyPsychedelicEffects(scene, time) {
     // Camera effects based on enlightenment
     const enlightenmentFactor = enlightenmentLevel / 100;
     
-    // INTENSE zoom pulsing for level 1!
-    const zoomIntensity = currentLevel === 0 ? 0.05 : 0.02;
+    // INTENSE zoom pulsing for level 1! (TONED DOWN)
+    const zoomIntensity = currentLevel === 0 ? 0.03 : 0.02;
     const zoomPulse = 1 + Math.sin(time * 0.001) * zoomIntensity * (1 + enlightenmentFactor);
     scene.cameras.main.setZoom(zoomPulse);
     
@@ -376,10 +376,10 @@ function applyPsychedelicEffects(scene, time) {
         );
     }
     
-    // Extra screen rotation for level 1!
-    if (currentLevel === 0) {
-        scene.cameras.main.rotation = Math.sin(time * 0.0005) * 0.02;
-    }
+    // Extra screen rotation for level 1! (DISABLED - was causing visibility issues)
+    // if (currentLevel === 0) {
+    //     scene.cameras.main.rotation = Math.sin(time * 0.0005) * 0.02;
+    // }
 }
 
 // Asset Creation
