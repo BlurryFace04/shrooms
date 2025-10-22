@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shroom Odyssey: Journey Through the Inner Shadows</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="enhanced-effects.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="title-screen" class="screen active">
+            <div class="title-content">
+                <h1 class="glitch" data-text="SHROOM ODYSSEY">SHROOM ODYSSEY</h1>
+                <p class="subtitle">Journey Through the Inner Shadows</p>
+                <p class="tagline">Descend into your fears. Rise through your mind.</p>
+                <button id="start-btn" class="neon-btn">BEGIN JOURNEY</button>
+                <div class="instructions">
+                    <h3>Controls</h3>
+                    <p>← → Arrow Keys: Move</p>
+                    <p>↑ Arrow or Space: Jump</p>
+                    <p>1, 2, 3, 4: Use Mind Bloom Powers</p>
+                    <p>E: Integrate (near defeated villains)</p>
+                </div>
+            </div>
+        </div>
+        <div id="game-canvas-container"></div>
+        <div id="hud" class="hidden">
+            <div class="hud-top">
+                <div class="fear-meter">
+                    <label>Fear Level</label>
+                    <div class="meter-bar">
+                        <div id="fear-bar" class="bar"></div>
+                    </div>
+                </div>
+                <div class="enlightenment-meter">
+                    <label>Enlightenment</label>
+                    <div class="meter-bar">
+                        <div id="enlightenment-bar" class="bar glow"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hud-powers">
+                <div class="power-slot" id="power-1">
+                    <span class="power-key">1</span>
+                    <span class="power-name">Ego Dissolve</span>
+                    <div class="power-cooldown"></div>
+                </div>
+                <div class="power-slot" id="power-2">
+                    <span class="power-key">2</span>
+                    <span class="power-name">Mirror Sight</span>
+                    <div class="power-cooldown"></div>
+                </div>
+                <div class="power-slot" id="power-3">
+                    <span class="power-key">3</span>
+                    <span class="power-name">Breath of Calm</span>
+                    <div class="power-cooldown"></div>
+                </div>
+                <div class="power-slot" id="power-4">
+                    <span class="power-key">4</span>
+                    <span class="power-name">Fractal Leap</span>
+                    <div class="power-cooldown"></div>
+                </div>
+            </div>
+            <div id="dialogue-box" class="hidden">
+                <div class="guide-name"></div>
+                <div class="dialogue-text"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
+

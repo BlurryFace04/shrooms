@@ -1,0 +1,24 @@
+{
+  "name": "shroom-odyssey",
+  "version": "1.0.0",
+  "description": "Journey Through the Inner Shadows - A psychedelic side-scrolling adventure game",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx live-server --port=8080"
+  },
+  "keywords": [
+    "game",
+    "psychedelic",
+    "phaser",
+    "side-scroller",
+    "adventure",
+    "consciousness",
+    "shadow-work"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
+
