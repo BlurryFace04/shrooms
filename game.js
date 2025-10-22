@@ -167,7 +167,16 @@ document.getElementById('start-btn').addEventListener('click', () => {
     document.getElementById('title-screen').classList.remove('active');
     document.getElementById('hud').classList.remove('hidden');
     game = new Phaser.Game(gameConfig);
+    updateLevelClass();
 });
+
+// Update body class based on level for CSS effects
+function updateLevelClass() {
+    document.body.className = '';
+    if (currentLevel === 0) {
+        document.body.classList.add('level-1');
+    }
+}
 
 // Phaser Functions
 function preload() {
@@ -349,14 +358,15 @@ function applyPsychedelicEffects(scene, time) {
     // Camera effects based on enlightenment
     const enlightenmentFactor = enlightenmentLevel / 100;
     
-    // Subtle zoom pulsing
-    const zoomPulse = 1 + Math.sin(time * 0.001) * 0.02 * enlightenmentFactor;
+    // INTENSE zoom pulsing for level 1!
+    const zoomIntensity = currentLevel === 0 ? 0.05 : 0.02;
+    const zoomPulse = 1 + Math.sin(time * 0.001) * zoomIntensity * (1 + enlightenmentFactor);
     scene.cameras.main.setZoom(zoomPulse);
     
-    // Color shift
-    if (enlightenmentFactor > 0.5) {
-        const hue = (time * 0.05) % 360;
-        const colorValue = Math.sin(time * 0.001) * 30;
+    // Color shift (ALWAYS active in level 1!)
+    if (enlightenmentFactor > 0.5 || currentLevel === 0) {
+        const hue = (time * (currentLevel === 0 ? 0.1 : 0.05)) % 360;
+        const colorValue = Math.sin(time * 0.001) * (currentLevel === 0 ? 50 : 30);
         scene.cameras.main.setTint(
             Phaser.Display.Color.GetColor(
                 255,
@@ -364,6 +374,11 @@ function applyPsychedelicEffects(scene, time) {
                 255 - colorValue
             )
         );
+    }
+    
+    // Extra screen rotation for level 1!
+    if (currentLevel === 0) {
+        scene.cameras.main.rotation = Math.sin(time * 0.0005) * 0.02;
     }
 }
 
@@ -431,27 +446,29 @@ function createPsychedelicBackground(scene) {
     }
     
     // Add TONS of psychedelic particles
+    const particleFrequency = currentLevel === 0 ? 50 : 200; // Level 1: 4x more particles!
     const emitter = scene.add.particles(0, 0, 'bloom', {
         x: { min: 0, max: 1200 },
         y: { min: -50, max: 0 },
         lifespan: 8000,
         speedY: { min: 20, max: 60 },
-        scale: { start: 0.3, end: 0 },
-        alpha: { start: 0.6, end: 0 },
+        scale: { start: currentLevel === 0 ? 0.5 : 0.3, end: 0 },
+        alpha: { start: currentLevel === 0 ? 0.8 : 0.6, end: 0 },
         tint: colors,
-        frequency: 200, // More particles!
+        frequency: particleFrequency,
         blendMode: 'ADD'
     });
     emitter.setDepth(-5);
     
-    // Add floating orbs in background
-    for (let i = 0; i < 15; i++) {
+    // Add floating orbs in background (EVEN MORE for level 1!)
+    const orbCount = currentLevel === 0 ? 30 : 15; // Level 1: double the orbs!
+    for (let i = 0; i < orbCount; i++) {
         const orb = scene.add.circle(
             Phaser.Math.Between(0, 1200),
             Phaser.Math.Between(0, 700),
-            Phaser.Math.Between(10, 30),
+            Phaser.Math.Between(currentLevel === 0 ? 15 : 10, currentLevel === 0 ? 50 : 30),
             colors[i % colors.length],
-            0.3
+            currentLevel === 0 ? 0.5 : 0.3
         );
         orb.setDepth(-8);
         
@@ -459,9 +476,9 @@ function createPsychedelicBackground(scene) {
             targets: orb,
             x: Phaser.Math.Between(0, 1200),
             y: Phaser.Math.Between(0, 700),
-            scale: { from: 1, to: 1.5 },
-            alpha: { from: 0.2, to: 0.5 },
-            duration: Phaser.Math.Between(3000, 6000),
+            scale: { from: 1, to: currentLevel === 0 ? 2 : 1.5 },
+            alpha: { from: currentLevel === 0 ? 0.4 : 0.2, to: currentLevel === 0 ? 0.7 : 0.5 },
+            duration: Phaser.Math.Between(2000, 5000),
             yoyo: true,
             repeat: -1,
             ease: 'Sine.easeInOut'
@@ -688,7 +705,7 @@ function createVillain(scene) {
     const villain = {
         sprite: sprite,
         data: villainData,
-        health: 30, // Reduced from 100 to 30 - much easier to beat!
+        health: currentLevel === 0 ? 10 : 30, // Level 1: only 10 HP! Others: 30 HP
         defeated: false,
         integrated: false,
         attackCooldown: 0,
@@ -710,9 +727,9 @@ function updateVillain(villain, time, scene) {
         player.x, player.y
     );
     
-    // Chase player with smoother movement (SLOWER for easier gameplay)
+    // Chase player with smoother movement (EVEN SLOWER in level 1!)
     if (distanceToPlayer > 100) {
-        const speed = 40; // Reduced from 80 to 40 - half speed!
+        const speed = currentLevel === 0 ? 20 : 40; // Level 1: super slow!
         const targetVelocity = villain.sprite.x < player.x ? speed : -speed;
         villain.sprite.setVelocityX(
             villain.sprite.body.velocity.x * 0.9 + targetVelocity * 0.1
@@ -1146,6 +1163,9 @@ function advanceLevel(scene) {
     // Reset level
     villains = [];
     backgroundEffects = [];
+    
+    // Update CSS class for level-specific effects
+    updateLevelClass();
     
     scene.scene.restart();
 }

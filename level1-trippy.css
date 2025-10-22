@@ -1,0 +1,120 @@
+/* 🍄 LEVEL 1 EXTRA TRIPPY EFFECTS 🍄 */
+
+/* Intense screen wobble */
+@keyframes megaWobble {
+    0%, 100% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(3px) translateY(-2px) rotate(0.5deg);
+    }
+    50% {
+        transform: translateX(-2px) translateY(3px) rotate(-0.5deg);
+    }
+    75% {
+        transform: translateX(2px) translateY(2px) rotate(0.3deg);
+    }
+}
+
+/* Ultra saturated colors */
+@keyframes ultraSaturate {
+    0%, 100% {
+        filter: saturate(2) contrast(1.3) brightness(1.1) hue-rotate(0deg);
+    }
+    25% {
+        filter: saturate(2.5) contrast(1.4) brightness(1.2) hue-rotate(90deg);
+    }
+    50% {
+        filter: saturate(3) contrast(1.5) brightness(1) hue-rotate(180deg);
+    }
+    75% {
+        filter: saturate(2.5) contrast(1.4) brightness(1.2) hue-rotate(270deg);
+    }
+}
+
+/* Pulsing vignette */
+@keyframes pulseVignette {
+    0%, 100% {
+        box-shadow: inset 0 0 100px rgba(255, 0, 255, 0.3);
+    }
+    50% {
+        box-shadow: inset 0 0 200px rgba(0, 255, 255, 0.5);
+    }
+}
+
+/* Apply to game container for Level 1 */
+body.level-1 #game-canvas-container {
+    animation: 
+        megaWobble 3s ease-in-out infinite,
+        ultraSaturate 8s linear infinite;
+}
+
+body.level-1 #game-container {
+    animation: pulseVignette 4s ease-in-out infinite;
+}
+
+/* Extreme glitch on title */
+body.level-1 .glitch {
+    animation: 
+        trippyGlitch 2s infinite,
+        chromaticShift 2s ease-in-out infinite;
+}
+
+/* Rainbow everything */
+body.level-1 .power-slot,
+body.level-1 .meter-bar,
+body.level-1 #dialogue-box {
+    animation: 
+        rainbowBorder 3s linear infinite,
+        breathe 2s ease-in-out infinite !important;
+}
+
+/* Spinning HUD */
+@keyframes gentleSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+body.level-1 .power-slot.active {
+    animation: gentleSpin 4s linear infinite, neonPulse 0.5s ease-in-out infinite;
+}
+
+/* Liquid background */
+@keyframes liquidWave {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+body.level-1::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 0, 255, 0.1),
+        rgba(0, 255, 255, 0.1),
+        rgba(255, 255, 0, 0.1),
+        rgba(255, 0, 255, 0.1)
+    );
+    background-size: 400% 400%;
+    animation: liquidWave 8s ease infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Extreme bloom effect */
+body.level-1 canvas {
+    filter: brightness(1.3) saturate(2.5) contrast(1.2);
+}
+
