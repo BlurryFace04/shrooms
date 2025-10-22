@@ -369,28 +369,44 @@ function applyPsychedelicEffects(scene, time) {
 
 // Asset Creation
 function createPlaceholderAssets(scene) {
-    // Player
+    // Player - MORE VISUALLY STUNNING
     const playerGraphics = scene.make.graphics({ x: 0, y: 0, add: false });
     playerGraphics.fillStyle(0x00ffff, 1);
     playerGraphics.fillCircle(16, 16, 16);
+    playerGraphics.fillStyle(0xff00ff, 0.6);
+    playerGraphics.fillCircle(16, 16, 12);
+    playerGraphics.fillStyle(0xffffff, 0.8);
+    playerGraphics.fillCircle(16, 16, 8);
+    playerGraphics.lineStyle(2, 0xffffff, 1);
+    playerGraphics.strokeCircle(16, 16, 16);
     playerGraphics.generateTexture('player', 32, 32);
     playerGraphics.destroy();
     
-    // Platform
+    // Platform - MORE VISUALLY APPEALING
     const platformGraphics = scene.make.graphics({ x: 0, y: 0, add: false });
-    platformGraphics.fillStyle(0xff00ff, 0.6);
+    platformGraphics.fillStyle(0xff00ff, 0.8);
     platformGraphics.fillRect(0, 0, 200, 20);
-    platformGraphics.lineStyle(2, 0xffffff, 1);
+    platformGraphics.fillStyle(0x00ffff, 0.4);
+    platformGraphics.fillRect(0, 5, 200, 10);
+    platformGraphics.lineStyle(3, 0xffffff, 1);
     platformGraphics.strokeRect(0, 0, 200, 20);
+    platformGraphics.lineStyle(2, 0x00ffff, 0.8);
+    platformGraphics.strokeRect(2, 2, 196, 16);
     platformGraphics.generateTexture('platform', 200, 20);
     platformGraphics.destroy();
     
-    // Mind Bloom
+    // Mind Bloom - GORGEOUS
     const bloomGraphics = scene.make.graphics({ x: 0, y: 0, add: false });
     bloomGraphics.fillStyle(0xffff00, 1);
     bloomGraphics.fillCircle(12, 12, 12);
-    bloomGraphics.fillStyle(0xff00ff, 0.5);
-    bloomGraphics.fillCircle(12, 12, 8);
+    bloomGraphics.fillStyle(0xff00ff, 0.7);
+    bloomGraphics.fillCircle(12, 12, 9);
+    bloomGraphics.fillStyle(0x00ffff, 0.5);
+    bloomGraphics.fillCircle(12, 12, 6);
+    bloomGraphics.fillStyle(0xffffff, 0.8);
+    bloomGraphics.fillCircle(12, 12, 3);
+    bloomGraphics.lineStyle(2, 0xffffff, 0.8);
+    bloomGraphics.strokeCircle(12, 12, 12);
     bloomGraphics.generateTexture('bloom', 24, 24);
     bloomGraphics.destroy();
 }
@@ -399,12 +415,12 @@ function createPlaceholderAssets(scene) {
 function createPsychedelicBackground(scene) {
     const { colors } = levelData.bg;
     
-    // Create gradient layers
-    for (let i = 0; i < 5; i++) {
+    // Create MORE gradient layers with enhanced visuals
+    for (let i = 0; i < 8; i++) {
         const layer = scene.add.rectangle(
             600, 350, 1200, 700, 
             colors[i % colors.length], 
-            0.2 - i * 0.03
+            0.3 - i * 0.03
         );
         layer.setDepth(-10 + i);
         backgroundEffects.push({ 
@@ -414,18 +430,43 @@ function createPsychedelicBackground(scene) {
         });
     }
     
-    // Add psychedelic particles
+    // Add TONS of psychedelic particles
     const emitter = scene.add.particles(0, 0, 'bloom', {
         x: { min: 0, max: 1200 },
         y: { min: -50, max: 0 },
         lifespan: 8000,
         speedY: { min: 20, max: 60 },
-        scale: { start: 0.1, end: 0 },
-        alpha: { start: 0.4, end: 0 },
+        scale: { start: 0.3, end: 0 },
+        alpha: { start: 0.6, end: 0 },
         tint: colors,
-        frequency: 500
+        frequency: 200, // More particles!
+        blendMode: 'ADD'
     });
     emitter.setDepth(-5);
+    
+    // Add floating orbs in background
+    for (let i = 0; i < 15; i++) {
+        const orb = scene.add.circle(
+            Phaser.Math.Between(0, 1200),
+            Phaser.Math.Between(0, 700),
+            Phaser.Math.Between(10, 30),
+            colors[i % colors.length],
+            0.3
+        );
+        orb.setDepth(-8);
+        
+        scene.tweens.add({
+            targets: orb,
+            x: Phaser.Math.Between(0, 1200),
+            y: Phaser.Math.Between(0, 700),
+            scale: { from: 1, to: 1.5 },
+            alpha: { from: 0.2, to: 0.5 },
+            duration: Phaser.Math.Between(3000, 6000),
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+    }
 }
 
 function updateBackgroundEffects(time) {
@@ -483,21 +524,54 @@ function updatePlayerEnlightenment() {
     player.setTint(Phaser.Display.Color.GetColor(color.r, color.g, color.b));
 }
 
-// Platforms
+// Platforms with VISUAL ENHANCEMENT
 function createPlatforms(scene) {
-    // Ground
+    // Ground with glow effects
     for (let i = 0; i < 10; i++) {
-        platforms.create(i * 120 + 100, 680, 'platform');
+        const platform = platforms.create(i * 120 + 100, 680, 'platform');
+        
+        // Add pulsing glow animation
+        scene.tweens.add({
+            targets: platform,
+            alpha: { from: 0.8, to: 1 },
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: i * 100
+        });
     }
     
-    // Floating platforms
+    // Floating platforms with animations
     const platformPositions = [
         [300, 550], [500, 450], [700, 350],
         [200, 400], [900, 500], [1000, 300]
     ];
     
-    platformPositions.forEach(pos => {
-        platforms.create(pos[0], pos[1], 'platform');
+    platformPositions.forEach((pos, index) => {
+        const platform = platforms.create(pos[0], pos[1], 'platform');
+        
+        // Floating animation
+        scene.tweens.add({
+            targets: platform,
+            y: pos[1] - 10,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: index * 300
+        });
+        
+        // Glow pulse
+        scene.tweens.add({
+            targets: platform,
+            alpha: { from: 0.7, to: 1 },
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: index * 200
+        });
     });
 }
 
@@ -614,7 +688,7 @@ function createVillain(scene) {
     const villain = {
         sprite: sprite,
         data: villainData,
-        health: 100,
+        health: 30, // Reduced from 100 to 30 - much easier to beat!
         defeated: false,
         integrated: false,
         attackCooldown: 0,
@@ -636,9 +710,9 @@ function updateVillain(villain, time, scene) {
         player.x, player.y
     );
     
-    // Chase player with smoother movement
+    // Chase player with smoother movement (SLOWER for easier gameplay)
     if (distanceToPlayer > 100) {
-        const speed = 80;
+        const speed = 40; // Reduced from 80 to 40 - half speed!
         const targetVelocity = villain.sprite.x < player.x ? speed : -speed;
         villain.sprite.setVelocityX(
             villain.sprite.body.velocity.x * 0.9 + targetVelocity * 0.1
@@ -683,8 +757,8 @@ function handleVillainCollision(player, villainSprite) {
     const villain = villains.find(v => v.sprite === villainSprite);
     if (!villain || villain.defeated) return;
     
-    // Player takes damage (increases fear)
-    fearLevel = Math.min(100, fearLevel + 2);
+    // Player takes damage (increases fear) - REDUCED for easier gameplay
+    fearLevel = Math.min(100, fearLevel + 0.5); // Reduced from 2 to 0.5
     
     // Push player back
     const pushDirection = player.x < villainSprite.x ? -1 : 1;
@@ -828,7 +902,7 @@ function activateMirrorSight(scene) {
     // Reveal hidden elements and damage villains
     villains.forEach(villain => {
         if (!villain.defeated) {
-            villain.health -= 30;
+            villain.health -= 50; // Increased from 30 to 50 - one-shot kill!
             villain.sprite.setTint(0xff00ff);
             
             // Damage explosion effect
