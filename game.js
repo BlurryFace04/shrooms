@@ -30,7 +30,7 @@ let enlightenmentLevel = 0;
 let mindBlooms = {
     egoDissove: { unlocked: true, cooldown: 0, maxCooldown: 10000 },
     mirrorSight: { unlocked: true, cooldown: 0, maxCooldown: 8000 },
-    breathOfCalm: { unlocked: true, cooldown: 0, maxCooldown: 12000 },
+    breathOfCalm: { unlocked: true, cooldown: 0, maxCooldown: 8000 }, // Reduced from 12000 to 8000
     fractalLeap: { unlocked: true, cooldown: 0, maxCooldown: 6000 }
 };
 let villains = [];
@@ -1021,7 +1021,7 @@ function activateBreathOfCalm(scene) {
         scene.cameras.main.clearTintEffect();
         calmEmitter.destroy();
         breathCircle.destroy();
-    }, 5000);
+    }, 3000); // Reduced from 5000ms to 3000ms (3 seconds)
     
     updateHUD();
 }
