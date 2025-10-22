@@ -28,10 +28,10 @@ let currentLevel = 0;
 let fearLevel = 50;
 let enlightenmentLevel = 0;
 let mindBlooms = {
-    egoDissove: { unlocked: false, cooldown: 0, maxCooldown: 10000 },
-    mirrorSight: { unlocked: false, cooldown: 0, maxCooldown: 8000 },
-    breathOfCalm: { unlocked: false, cooldown: 0, maxCooldown: 12000 },
-    fractalLeap: { unlocked: false, cooldown: 0, maxCooldown: 6000 }
+    egoDissove: { unlocked: true, cooldown: 0, maxCooldown: 10000 },
+    mirrorSight: { unlocked: true, cooldown: 0, maxCooldown: 8000 },
+    breathOfCalm: { unlocked: true, cooldown: 0, maxCooldown: 12000 },
+    fractalLeap: { unlocked: true, cooldown: 0, maxCooldown: 6000 }
 };
 let villains = [];
 let heroGuides = [];
@@ -558,17 +558,11 @@ function collectMindBloom(player, bloom) {
     enlightenmentLevel += 5;
     fearLevel = Math.max(0, fearLevel - 10);
     
-    // Unlock power if this is the level's power
-    if (levelData.unlockPower) {
-        const powerKey = levelData.unlockPower;
-        if (!mindBlooms[powerKey].unlocked) {
-            mindBlooms[powerKey].unlocked = true;
-            showGuideDialogue(
-                `You've unlocked ${powerKey}! Press the key to activate.`,
-                levelData.guide.name
-            );
-        }
-    }
+    // All powers unlocked from start, just show collection message
+    showGuideDialogue(
+        `Mind Bloom collected! +5 Enlightenment`,
+        levelData.guide.name
+    );
     
     // Enhanced visual effect
     const emitter = this.add.particles(bloomX, bloomY, 'bloom', {
