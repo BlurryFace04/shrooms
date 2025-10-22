@@ -1,0 +1,354 @@
+/* 🍄 INTENSE PSYCHEDELIC SHROOM EFFECTS 🍄 */
+
+/* Wavy Distortion */
+@keyframes waveDistortion {
+    0% {
+        transform: translateX(0) translateY(0) scale(1);
+    }
+    25% {
+        transform: translateX(5px) translateY(-3px) scale(1.01);
+    }
+    50% {
+        transform: translateX(-3px) translateY(5px) scale(0.99);
+    }
+    75% {
+        transform: translateX(3px) translateY(3px) scale(1.01);
+    }
+    100% {
+        transform: translateX(0) translateY(0) scale(1);
+    }
+}
+
+#game-canvas-container canvas {
+    animation: waveDistortion 4s ease-in-out infinite;
+}
+
+/* Liquid Color Flow */
+@keyframes liquidFlow {
+    0% {
+        filter: hue-rotate(0deg) saturate(1.5) brightness(1.1);
+    }
+    25% {
+        filter: hue-rotate(90deg) saturate(2) brightness(1.2);
+    }
+    50% {
+        filter: hue-rotate(180deg) saturate(2.5) brightness(1);
+    }
+    75% {
+        filter: hue-rotate(270deg) saturate(2) brightness(1.2);
+    }
+    100% {
+        filter: hue-rotate(360deg) saturate(1.5) brightness(1.1);
+    }
+}
+
+/* Trippy Overlay Patterns */
+#game-container {
+    position: relative;
+}
+
+#game-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 0, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    animation: morphingBlobs 10s ease-in-out infinite;
+    z-index: 2;
+    mix-blend-mode: screen;
+}
+
+@keyframes morphingBlobs {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.6;
+    }
+    33% {
+        transform: scale(1.2) rotate(120deg);
+        opacity: 0.8;
+    }
+    66% {
+        transform: scale(0.9) rotate(240deg);
+        opacity: 0.7;
+    }
+}
+
+/* Pulsing Glow on HUD Elements */
+.hud-top, .hud-powers {
+    animation: hudGlow 3s ease-in-out infinite;
+}
+
+@keyframes hudGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px rgba(255, 0, 255, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8));
+    }
+}
+
+/* Melting Text Effect */
+@keyframes meltingText {
+    0%, 100% {
+        transform: scaleY(1) translateY(0);
+        filter: blur(0px);
+    }
+    50% {
+        transform: scaleY(1.05) translateY(2px);
+        filter: blur(0.5px);
+    }
+}
+
+.guide-name, .power-name {
+    animation: meltingText 2s ease-in-out infinite;
+}
+
+/* Spiral Animation */
+@keyframes spiralSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.power-slot.active {
+    animation: spiralSpin 3s linear infinite, powerFlash 1s ease-in-out infinite;
+}
+
+/* Fractal Zoom */
+@keyframes fractalZoom {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+#game-canvas-container {
+    animation: fractalZoom 5s ease-in-out infinite;
+}
+
+/* Rainbow Border Flow */
+@keyframes rainbowBorder {
+    0% {
+        border-color: #ff0000;
+        box-shadow: 0 0 20px #ff0000;
+    }
+    16% {
+        border-color: #ff7f00;
+        box-shadow: 0 0 20px #ff7f00;
+    }
+    33% {
+        border-color: #ffff00;
+        box-shadow: 0 0 20px #ffff00;
+    }
+    50% {
+        border-color: #00ff00;
+        box-shadow: 0 0 20px #00ff00;
+    }
+    66% {
+        border-color: #0000ff;
+        box-shadow: 0 0 20px #0000ff;
+    }
+    83% {
+        border-color: #8b00ff;
+        box-shadow: 0 0 20px #8b00ff;
+    }
+    100% {
+        border-color: #ff0000;
+        box-shadow: 0 0 20px #ff0000;
+    }
+}
+
+.meter-bar, .power-slot, #dialogue-box {
+    animation: rainbowBorder 5s linear infinite;
+}
+
+/* Breathing Screen Effect */
+@keyframes screenBreathe {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.01);
+        filter: brightness(1.1);
+    }
+}
+
+body {
+    animation: screenBreathe 4s ease-in-out infinite;
+}
+
+/* Trippy Title Glitch */
+@keyframes trippyGlitch {
+    0%, 90%, 100% {
+        transform: translate(0) skew(0deg);
+    }
+    20% {
+        transform: translate(-3px, 3px) skew(2deg);
+        filter: hue-rotate(90deg);
+    }
+    40% {
+        transform: translate(3px, -3px) skew(-2deg);
+        filter: hue-rotate(180deg);
+    }
+    60% {
+        transform: translate(-2px, 2px) skew(1deg);
+        filter: hue-rotate(270deg);
+    }
+}
+
+.glitch {
+    animation: trippyGlitch 4s infinite;
+}
+
+/* Floating Particles Background */
+@keyframes floatingParticles {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Chromatic Aberration */
+@keyframes chromaticShift {
+    0%, 100% {
+        text-shadow: 
+            -2px 0 0 #ff0000,
+            2px 0 0 #00ffff,
+            0 0 10px #ff00ff;
+    }
+    33% {
+        text-shadow: 
+            2px 2px 0 #ff0000,
+            -2px -2px 0 #00ffff,
+            0 0 15px #ffff00;
+    }
+    66% {
+        text-shadow: 
+            -2px 2px 0 #00ff00,
+            2px -2px 0 #ff00ff,
+            0 0 20px #00ffff;
+    }
+}
+
+h1, .subtitle, .tagline {
+    animation: chromaticShift 3s ease-in-out infinite;
+}
+
+/* Liquid Morph Background */
+@keyframes liquidMorph {
+    0%, 100% {
+        border-radius: 50% 50% 50% 50%;
+        transform: rotate(0deg);
+    }
+    25% {
+        border-radius: 40% 60% 70% 30%;
+        transform: rotate(90deg);
+    }
+    50% {
+        border-radius: 60% 40% 30% 70%;
+        transform: rotate(180deg);
+    }
+    75% {
+        border-radius: 30% 70% 40% 60%;
+        transform: rotate(270deg);
+    }
+}
+
+/* Neon Pulse */
+@keyframes neonPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 5px currentColor,
+            0 0 10px currentColor,
+            0 0 20px currentColor,
+            inset 0 0 10px currentColor;
+    }
+    50% {
+        box-shadow: 
+            0 0 10px currentColor,
+            0 0 20px currentColor,
+            0 0 40px currentColor,
+            0 0 60px currentColor,
+            inset 0 0 20px currentColor;
+    }
+}
+
+.power-slot.active, .neon-btn:hover {
+    animation: neonPulse 1s ease-in-out infinite;
+}
+
+/* Trippy Scan Lines */
+@keyframes scanlines {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+#game-container {
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(255, 0, 255, 0.03) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0, 255, 255, 0.03) 3px
+    );
+    background-size: 100% 4px;
+    animation: scanlines 8s linear infinite;
+}
+
+/* Wobble Effect */
+@keyframes wobble {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-2px) rotate(-1deg);
+    }
+    75% {
+        transform: translateX(2px) rotate(1deg);
+    }
+}
+
+#dialogue-box {
+    animation: wobble 3s ease-in-out infinite, float 3s ease-in-out infinite;
+}
+
+/* Psychedelic Bloom */
+@keyframes psychedelicBloom {
+    0%, 100% {
+        filter: brightness(1) contrast(1) saturate(1.5);
+    }
+    50% {
+        filter: brightness(1.2) contrast(1.3) saturate(2);
+    }
+}
+
+canvas {
+    animation: psychedelicBloom 6s ease-in-out infinite;
+}
+

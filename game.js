@@ -233,22 +233,37 @@ function create() {
 function update(time, delta) {
     if (!player) return;
     
-    // Player movement
+    // Smooth player movement with acceleration
+    const acceleration = 15;
+    const maxSpeed = 250;
+    const friction = 0.85;
+    
     if (cursors.left.isDown) {
-        player.setVelocityX(-200);
+        player.setVelocityX(Math.max(player.body.velocity.x - acceleration, -maxSpeed));
         player.flipX = true;
         player.alpha = Math.min(1, player.alpha + 0.01);
+        createMovementTrail(this, player);
     } else if (cursors.right.isDown) {
-        player.setVelocityX(200);
+        player.setVelocityX(Math.min(player.body.velocity.x + acceleration, maxSpeed));
         player.flipX = false;
         player.alpha = Math.min(1, player.alpha + 0.01);
+        createMovementTrail(this, player);
     } else {
-        player.setVelocityX(0);
+        // Smooth deceleration
+        player.setVelocityX(player.body.velocity.x * friction);
     }
     
-    // Jump
+    // Jump with enhanced effect
     if ((cursors.up.isDown || keys.space.isDown) && player.body.touching.down) {
-        player.setVelocityY(-400);
+        player.setVelocityY(-450);
+        createJumpEffect(this, player);
+    }
+    
+    // Floating/drifting effect when in air
+    if (!player.body.touching.down) {
+        player.angle = Math.sin(time * 0.003) * 5; // Gentle rotation in air
+    } else {
+        player.angle = 0;
     }
     
     // Update player appearance based on enlightenment
@@ -276,8 +291,76 @@ function update(time, delta) {
     // Update background effects
     updateBackgroundEffects(time);
     
+    // Add screen distortion based on enlightenment
+    applyPsychedelicEffects(this, time);
+    
     // Check level completion
     checkLevelCompletion(this);
+}
+
+// Helper Functions for Smooth Effects
+function createMovementTrail(scene, sprite) {
+    // Create afterimage trail
+    if (Math.random() < 0.3) {
+        const trail = scene.add.sprite(sprite.x, sprite.y, 'player');
+        trail.setTint(Phaser.Display.Color.GetColor(
+            Math.random() * 255,
+            Math.random() * 255,
+            Math.random() * 255
+        ));
+        trail.setAlpha(0.3);
+        trail.setDepth(sprite.depth - 1);
+        trail.flipX = sprite.flipX;
+        
+        scene.tweens.add({
+            targets: trail,
+            alpha: 0,
+            scale: 0.5,
+            duration: 500,
+            ease: 'Power2',
+            onComplete: () => trail.destroy()
+        });
+    }
+}
+
+function createJumpEffect(scene, sprite) {
+    // Particle burst on jump
+    const jumpEmitter = scene.add.particles(sprite.x, sprite.y + 16, 'bloom', {
+        speed: { min: 50, max: 150 },
+        angle: { min: 60, max: 120 },
+        scale: { start: 0.5, end: 0 },
+        alpha: { start: 0.8, end: 0 },
+        lifespan: 600,
+        quantity: 15,
+        tint: [0x00ffff, 0xff00ff],
+        blendMode: 'ADD'
+    });
+    jumpEmitter.explode();
+    
+    // Screen shake
+    scene.cameras.main.shake(100, 0.003);
+}
+
+function applyPsychedelicEffects(scene, time) {
+    // Camera effects based on enlightenment
+    const enlightenmentFactor = enlightenmentLevel / 100;
+    
+    // Subtle zoom pulsing
+    const zoomPulse = 1 + Math.sin(time * 0.001) * 0.02 * enlightenmentFactor;
+    scene.cameras.main.setZoom(zoomPulse);
+    
+    // Color shift
+    if (enlightenmentFactor > 0.5) {
+        const hue = (time * 0.05) % 360;
+        const colorValue = Math.sin(time * 0.001) * 30;
+        scene.cameras.main.setTint(
+            Phaser.Display.Color.GetColor(
+                255,
+                255 - colorValue,
+                255 - colorValue
+            )
+        );
+    }
 }
 
 // Asset Creation
@@ -352,13 +435,35 @@ function updateBackgroundEffects(time) {
 // Player
 function createPlayer(scene) {
     player = scene.physics.add.sprite(100, 300, 'player');
-    player.setBounce(0.1);
+    player.setBounce(0.15);
     player.setCollideWorldBounds(true);
     player.setDepth(10);
     player.alpha = 0.7 + enlightenmentLevel * 0.003;
+    player.setDrag(100, 0); // Add drag for smoother feel
     
-    // Add glow effect
-    player.postFX = scene.add.pointlight(player.x, player.y, 0x00ffff, 50, 0.3);
+    // Add pulsing glow effect
+    scene.tweens.add({
+        targets: player,
+        scaleX: { from: 1, to: 1.1 },
+        scaleY: { from: 1, to: 1.1 },
+        duration: 1500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+    });
+    
+    // Continuous particle trail
+    const trailEmitter = scene.add.particles(player.x, player.y, 'player', {
+        speed: 50,
+        scale: { start: 0.5, end: 0 },
+        alpha: { start: 0.6, end: 0 },
+        lifespan: 800,
+        frequency: 50,
+        blendMode: 'ADD',
+        tint: [0x00ffff, 0xff00ff, 0xffff00],
+        follow: player
+    });
+    trailEmitter.setDepth(9);
 }
 
 function updatePlayerEnlightenment() {
@@ -367,11 +472,11 @@ function updatePlayerEnlightenment() {
     // Become more luminous with enlightenment
     const enlightenmentFactor = enlightenmentLevel / 100;
     player.alpha = 0.7 + enlightenmentFactor * 0.3;
-    player.setTint(Phaser.Display.Color.GetColor(
-        255,
-        255 - enlightenmentFactor * 100,
-        255
-    ));
+    
+    // Rainbow color cycling with enlightenment
+    const hue = (Date.now() * 0.1 * (1 + enlightenmentFactor)) % 360;
+    const color = Phaser.Display.Color.HSVToRGB(hue / 360, 0.5, 1);
+    player.setTint(Phaser.Display.Color.GetColor(color.r, color.g, color.b));
 }
 
 // Platforms
@@ -398,23 +503,52 @@ function createCollectibles(scene) {
         [300, 500], [500, 400], [700, 300], [900, 450], [400, 250]
     ];
     
-    positions.forEach(pos => {
+    positions.forEach((pos, index) => {
         const bloom = collectibles.create(pos[0], pos[1], 'bloom');
         bloom.setBounce(0.5);
         
-        // Add glow animation
+        // Add complex animation
         scene.tweens.add({
             targets: bloom,
-            scale: { from: 1, to: 1.3 },
+            scale: { from: 1, to: 1.5 },
             alpha: { from: 0.7, to: 1 },
-            duration: 1000,
+            angle: 360,
+            duration: 2000,
             yoyo: true,
-            repeat: -1
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: index * 200
         });
+        
+        // Floating motion
+        scene.tweens.add({
+            targets: bloom,
+            y: bloom.y - 20,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: index * 300
+        });
+        
+        // Particle aura
+        const bloomEmitter = scene.add.particles(bloom.x, bloom.y, 'bloom', {
+            speed: { min: 10, max: 30 },
+            scale: { start: 0.3, end: 0 },
+            alpha: { start: 0.8, end: 0 },
+            lifespan: 1500,
+            frequency: 100,
+            blendMode: 'ADD',
+            tint: [0xffff00, 0xff00ff, 0x00ffff],
+            follow: bloom
+        });
+        bloomEmitter.setDepth(8);
     });
 }
 
 function collectMindBloom(player, bloom) {
+    const bloomX = bloom.x;
+    const bloomY = bloom.y;
     bloom.destroy();
     
     enlightenmentLevel += 5;
@@ -432,15 +566,31 @@ function collectMindBloom(player, bloom) {
         }
     }
     
-    // Visual effect
-    const emitter = this.add.particles(bloom.x, bloom.y, 'bloom', {
-        speed: { min: 100, max: 200 },
-        scale: { start: 0.5, end: 0 },
-        lifespan: 1000,
-        quantity: 20,
-        tint: 0xffff00
+    // Enhanced visual effect
+    const emitter = this.add.particles(bloomX, bloomY, 'bloom', {
+        speed: { min: 100, max: 300 },
+        scale: { start: 1, end: 0 },
+        alpha: { start: 1, end: 0 },
+        lifespan: 2000,
+        quantity: 40,
+        tint: [0xffff00, 0xff00ff, 0x00ffff],
+        blendMode: 'ADD'
     });
     emitter.explode();
+    
+    // Screen flash
+    this.cameras.main.flash(300, 255, 255, 0, true);
+    
+    // Ripple effect
+    const ripple = this.add.circle(bloomX, bloomY, 10, 0xffff00, 0.5);
+    this.tweens.add({
+        targets: ripple,
+        radius: 200,
+        alpha: 0,
+        duration: 800,
+        ease: 'Cubic.easeOut',
+        onComplete: () => ripple.destroy()
+    });
     
     updateHUD();
 }
@@ -488,22 +638,47 @@ function updateVillain(villain, time, scene) {
         player.x, player.y
     );
     
-    // Chase player
+    // Chase player with smoother movement
     if (distanceToPlayer > 100) {
         const speed = 80;
-        if (villain.sprite.x < player.x) {
-            villain.sprite.setVelocityX(speed);
-        } else {
-            villain.sprite.setVelocityX(-speed);
-        }
+        const targetVelocity = villain.sprite.x < player.x ? speed : -speed;
+        villain.sprite.setVelocityX(
+            villain.sprite.body.velocity.x * 0.9 + targetVelocity * 0.1
+        );
     } else {
-        villain.sprite.setVelocityX(0);
+        villain.sprite.setVelocityX(villain.sprite.body.velocity.x * 0.9);
     }
     
-    // Pulsing effect
+    // Enhanced pulsing and floating effect
     villain.movementPhase += 0.05;
-    const scale = 1 + Math.sin(villain.movementPhase) * 0.1;
+    const scale = 1 + Math.sin(villain.movementPhase) * 0.15;
     villain.sprite.setScale(scale);
+    villain.sprite.angle = Math.sin(villain.movementPhase * 0.5) * 10;
+    
+    // Color cycling
+    const hue = (time * 0.05 + villain.movementPhase * 10) % 360;
+    const color = Phaser.Display.Color.HSVToRGB(hue / 360, 0.8, 1);
+    villain.sprite.setTint(Phaser.Display.Color.GetColor(color.r, color.g, color.b));
+    
+    // Ominous particle trail
+    if (Math.random() < 0.1) {
+        const particle = scene.add.circle(
+            villain.sprite.x + Phaser.Math.Between(-20, 20),
+            villain.sprite.y + Phaser.Math.Between(-30, 30),
+            Phaser.Math.Between(3, 8),
+            villain.data.color,
+            0.6
+        );
+        particle.setDepth(5);
+        scene.tweens.add({
+            targets: particle,
+            alpha: 0,
+            scale: 0,
+            duration: 1000,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
 }
 
 function handleVillainCollision(player, villainSprite) {
@@ -600,21 +775,55 @@ function activateEgoDissolve(scene) {
             villain.sprite.setTint(0x00ffff);
             villain.sprite.setVelocity(0, 0);
             
+            // Freeze particles around villain
+            const freezeEmitter = scene.add.particles(villain.sprite.x, villain.sprite.y, 'bloom', {
+                speed: { min: 20, max: 50 },
+                scale: { start: 0.3, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 2000,
+                frequency: 50,
+                tint: [0x00ffff, 0xffffff],
+                blendMode: 'ADD',
+                follow: villain.sprite
+            });
+            
             setTimeout(() => {
                 villain.sprite.clearTint();
+                freezeEmitter.destroy();
             }, 5000);
         }
     });
     
-    // Visual effect
-    const circle = scene.add.circle(player.x, player.y, 200, 0x00ffff, 0.3);
-    scene.tweens.add({
-        targets: circle,
-        scale: 2,
-        alpha: 0,
-        duration: 1000,
-        onComplete: () => circle.destroy()
+    // Enhanced visual effect - multiple expanding circles
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const circle = scene.add.circle(player.x, player.y, 50, 0x00ffff, 0.4 - i * 0.1);
+            scene.tweens.add({
+                targets: circle,
+                radius: 300,
+                alpha: 0,
+                duration: 1500,
+                ease: 'Cubic.easeOut',
+                onComplete: () => circle.destroy()
+            });
+        }, i * 200);
+    }
+    
+    // Screen frost effect
+    scene.cameras.main.flash(500, 0, 255, 255, true);
+    
+    // Spiral particles
+    const spiralEmitter = scene.add.particles(player.x, player.y, 'bloom', {
+        speed: { min: 100, max: 200 },
+        scale: { start: 0.5, end: 0 },
+        alpha: { start: 0.8, end: 0 },
+        lifespan: 2000,
+        quantity: 30,
+        tint: [0x00ffff, 0xffffff, 0x00ccff],
+        blendMode: 'ADD',
+        emitting: false
     });
+    spiralEmitter.explode();
 }
 
 function activateMirrorSight(scene) {
@@ -624,10 +833,35 @@ function activateMirrorSight(scene) {
             villain.health -= 30;
             villain.sprite.setTint(0xff00ff);
             
+            // Damage explosion effect
+            const damageEmitter = scene.add.particles(villain.sprite.x, villain.sprite.y, 'bloom', {
+                speed: { min: 150, max: 300 },
+                scale: { start: 0.8, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 1000,
+                quantity: 25,
+                tint: [0xff00ff, 0xff0088, 0xff00ff],
+                blendMode: 'ADD'
+            });
+            damageEmitter.explode();
+            
             if (villain.health <= 0) {
                 villain.defeated = true;
                 villain.sprite.setVelocity(0, 0);
                 villain.sprite.setTint(0x888888);
+                
+                // Victory particle burst
+                const victoryEmitter = scene.add.particles(villain.sprite.x, villain.sprite.y, 'bloom', {
+                    speed: { min: 50, max: 150 },
+                    scale: { start: 1, end: 0 },
+                    alpha: { start: 1, end: 0 },
+                    lifespan: 2000,
+                    quantity: 50,
+                    tint: [0xffffff, 0x00ffff, 0xff00ff],
+                    blendMode: 'ADD'
+                });
+                victoryEmitter.explode();
+                
                 showGuideDialogue("Press E to integrate this shadow.", "Guide");
             }
             
@@ -639,8 +873,32 @@ function activateMirrorSight(scene) {
         }
     });
     
-    // Flash effect
-    scene.cameras.main.flash(500, 255, 0, 255);
+    // Enhanced flash effect with multiple colors
+    scene.cameras.main.flash(300, 255, 0, 255);
+    
+    // Mirror shatter effect
+    for (let i = 0; i < 20; i++) {
+        const shard = scene.add.rectangle(
+            player.x + Phaser.Math.Between(-50, 50),
+            player.y + Phaser.Math.Between(-50, 50),
+            Phaser.Math.Between(5, 15),
+            Phaser.Math.Between(5, 15),
+            0xff00ff,
+            0.8
+        );
+        shard.setDepth(20);
+        
+        scene.tweens.add({
+            targets: shard,
+            x: shard.x + Phaser.Math.Between(-200, 200),
+            y: shard.y + Phaser.Math.Between(-200, 200),
+            angle: Phaser.Math.Between(0, 360),
+            alpha: 0,
+            duration: 1000,
+            ease: 'Cubic.easeOut',
+            onComplete: () => shard.destroy()
+        });
+    }
 }
 
 function activateBreathOfCalm(scene) {
@@ -650,38 +908,135 @@ function activateBreathOfCalm(scene) {
     
     fearLevel = Math.max(0, fearLevel - 20);
     
-    scene.cameras.main.setTint(0x00ffff);
+    // Breathing effect - expanding and contracting circle
+    const breathCircle = scene.add.circle(player.x, player.y, 50, 0x00ffff, 0.2);
+    breathCircle.setDepth(15);
+    
+    scene.tweens.add({
+        targets: breathCircle,
+        radius: 400,
+        alpha: 0,
+        duration: 2000,
+        repeat: 2,
+        ease: 'Sine.easeInOut'
+    });
+    
+    // Calm particles floating upward
+    const calmEmitter = scene.add.particles(player.x, player.y, 'bloom', {
+        speed: { min: 10, max: 30 },
+        angle: { min: -100, max: -80 },
+        scale: { start: 0.3, end: 0 },
+        alpha: { start: 0.8, end: 0 },
+        lifespan: 3000,
+        frequency: 100,
+        tint: [0x00ffff, 0xaaffff, 0xffffff],
+        blendMode: 'ADD',
+        gravityY: -50
+    });
+    
+    // Tint with fade in/out
+    scene.tweens.add({
+        targets: scene.cameras.main,
+        scrollX: scene.cameras.main.scrollX,
+        duration: 500,
+        onStart: () => scene.cameras.main.setTint(0xaaffff),
+        yoyo: false
+    });
     
     setTimeout(() => {
         scene.physics.world.timeScale = 1;
         scene.time.timeScale = 1;
         scene.cameras.main.clearTintEffect();
+        calmEmitter.destroy();
+        breathCircle.destroy();
     }, 5000);
     
     updateHUD();
 }
 
 function activateFractalLeap(scene) {
-    // Teleport through obstacles
+    // Store original position
+    const startX = player.x;
+    const startY = player.y;
+    
+    // Calculate target position
     const targetX = player.flipX ? player.x - 300 : player.x + 300;
     const targetY = player.y;
+    const clampedX = Phaser.Math.Clamp(targetX, 50, 1150);
     
-    // Trail effect
-    const trail = scene.add.particles(player.x, player.y, 'player', {
+    // Create portal at start
+    const portalStart = scene.add.circle(startX, startY, 20, 0xff00ff, 0.8);
+    portalStart.setDepth(15);
+    scene.tweens.add({
+        targets: portalStart,
+        radius: 80,
+        alpha: 0,
+        duration: 500,
+        ease: 'Cubic.easeOut',
+        onComplete: () => portalStart.destroy()
+    });
+    
+    // Fractal trail between points
+    const steps = 10;
+    for (let i = 0; i < steps; i++) {
+        const t = i / steps;
+        const x = startX + (clampedX - startX) * t;
+        const y = startY + Math.sin(t * Math.PI * 2) * 30;
+        
+        setTimeout(() => {
+            const fractal = scene.add.circle(x, y, 15, 0xff00ff, 0.6);
+            fractal.setDepth(15);
+            scene.tweens.add({
+                targets: fractal,
+                radius: 40,
+                alpha: 0,
+                duration: 600,
+                ease: 'Power2',
+                onComplete: () => fractal.destroy()
+            });
+        }, i * 30);
+    }
+    
+    // Particle trail
+    const trail = scene.add.particles(startX, startY, 'bloom', {
+        x: { start: startX, end: clampedX },
+        y: { start: startY, end: targetY },
         speed: 0,
         scale: { start: 1, end: 0 },
-        alpha: { start: 0.8, end: 0 },
-        lifespan: 500,
-        quantity: 10
+        alpha: { start: 1, end: 0 },
+        lifespan: 800,
+        quantity: 50,
+        tint: [0xff00ff, 0x00ffff, 0xffff00],
+        blendMode: 'ADD'
     });
     trail.explode();
     
-    player.setPosition(
-        Phaser.Math.Clamp(targetX, 50, 1150),
-        targetY
-    );
+    // Create portal at destination
+    const portalEnd = scene.add.circle(clampedX, targetY, 80, 0x00ffff, 0);
+    portalEnd.setDepth(15);
+    scene.tweens.add({
+        targets: portalEnd,
+        radius: 20,
+        alpha: 0.8,
+        duration: 300,
+        ease: 'Cubic.easeIn',
+        onComplete: () => {
+            scene.tweens.add({
+                targets: portalEnd,
+                radius: 80,
+                alpha: 0,
+                duration: 500,
+                onComplete: () => portalEnd.destroy()
+            });
+        }
+    });
     
-    scene.cameras.main.flash(200, 255, 255, 0);
+    // Teleport player
+    player.setPosition(clampedX, targetY);
+    
+    // Screen effects
+    scene.cameras.main.flash(200, 255, 0, 255);
+    scene.cameras.main.shake(150, 0.005);
 }
 
 function updateCooldowns(delta) {

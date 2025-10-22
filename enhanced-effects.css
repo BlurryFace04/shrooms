@@ -1,23 +1,37 @@
 /* Additional Psychedelic Effects */
 
-/* Fractal Background Animation */
+/* Intense Fractal Background Animation */
 @keyframes fractalPulse {
     0%, 100% {
-        filter: hue-rotate(0deg) brightness(1);
+        filter: hue-rotate(0deg) brightness(1) saturate(1.2);
     }
     25% {
-        filter: hue-rotate(90deg) brightness(1.2);
+        filter: hue-rotate(90deg) brightness(1.3) saturate(1.5);
     }
     50% {
-        filter: hue-rotate(180deg) brightness(0.8);
+        filter: hue-rotate(180deg) brightness(0.8) saturate(1.8);
     }
     75% {
-        filter: hue-rotate(270deg) brightness(1.2);
+        filter: hue-rotate(270deg) brightness(1.3) saturate(1.5);
     }
 }
 
 #game-canvas-container {
-    animation: fractalPulse 20s infinite;
+    animation: fractalPulse 15s infinite;
+}
+
+/* Kaleidoscope Effect */
+@keyframes kaleidoscope {
+    0%, 100% {
+        filter: hue-rotate(0deg) contrast(1.1);
+    }
+    50% {
+        filter: hue-rotate(180deg) contrast(1.3);
+    }
+}
+
+body {
+    animation: kaleidoscope 10s infinite ease-in-out;
 }
 
 /* Glowing Text Effects */
@@ -79,7 +93,7 @@ body {
     animation: breathe 4s ease-in-out infinite;
 }
 
-/* Psychedelic Grid Background */
+/* Enhanced Psychedelic Grid Background */
 #game-container::before {
     content: '';
     position: absolute;
@@ -88,11 +102,11 @@ body {
     width: 100%;
     height: 100%;
     background-image: 
-        linear-gradient(0deg, transparent 24%, rgba(255, 0, 255, .05) 25%, rgba(255, 0, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, .05) 75%, rgba(255, 0, 255, .05) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, .05) 25%, rgba(0, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .05) 75%, rgba(0, 255, 255, .05) 76%, transparent 77%, transparent);
+        linear-gradient(0deg, transparent 24%, rgba(255, 0, 255, .1) 25%, rgba(255, 0, 255, .1) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, .1) 75%, rgba(255, 0, 255, .1) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, .1) 25%, rgba(0, 255, 255, .1) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .1) 75%, rgba(0, 255, 255, .1) 76%, transparent 77%, transparent);
     background-size: 50px 50px;
     pointer-events: none;
-    animation: gridScroll 20s linear infinite;
+    animation: gridScroll 15s linear infinite, gridPulse 3s ease-in-out infinite;
     z-index: 1;
 }
 
@@ -102,6 +116,17 @@ body {
     }
     100% {
         background-position: 50px 50px;
+    }
+}
+
+@keyframes gridPulse {
+    0%, 100% {
+        opacity: 0.5;
+        background-size: 50px 50px;
+    }
+    50% {
+        opacity: 1;
+        background-size: 55px 55px;
     }
 }
 
